@@ -170,11 +170,8 @@
 					<execution>
 						<id>cds.install-dependencies</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>install-cdsdk</goal>
 						</goals>
-						<configuration>
-							<arguments>install @sap/cds-dk@${cds.install-cdsdk.version} @sap/cds-mtxs@^1 --no-save</arguments>
-						</configuration>
 					</execution>
 
 					<execution>

@@ -35,10 +35,18 @@ modules:
         properties:
           CDS_MULTITENANCY_APPUI_URL: ~{url}
       - name: cf-logging
+      - name: mtx-api
+        properties:
+          CDS_MULTITENANCY_MTXS_ENABLED: true
+          CDS_MULTITENANCY_SIDECAR_URL: ~{mtx-url}
+      - name: bookshop-auth
     provides:
       - name: srv
         properties:
           url: '${default-url}'
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
 # --------------------- SIDECAR MODULE -----------------------
   - name: bookshop-mt-sidecar
 # ------------------------------------------------------------
@@ -62,6 +70,9 @@ modules:
       - name: sidecar
         properties:
           url: ${default-url}
+      - name: mtx-api
+        properties:
+          mtx-url: ${default-url}
 # --------------------- APPROUTER MODULE ---------------------
   - name: bookshop-mt-app
 # ------------------------------------------------------------
@@ -85,6 +96,7 @@ modules:
       - name: app
         properties:
           url: '${default-url}'
+
 # --------------------- RESOURCES ---------------------
 resources:
 # -----------------------------------------------------
@@ -107,15 +119,18 @@ resources:
       service: saas-registry
       service-plan: application
       config:
-         appName: bookshop-mt-${org}-${space} # this is the text on the tile
-         xsappname: bookshop-mt-${org}-${space} # this is the value from xsuaa.parameters.config.xsappname
-         appUrls:
-           getDependencies: ~{srv/url}/mt/v1.0/subscriptions/dependencies
-           onSubscription: ~{srv/url}/mt/v1.0/subscriptions/tenants/{tenantId}
-           onSubscriptionAsync: true
-           onUnSubscriptionAsync: true
-           onUpdateDependenciesAsync: true
-           callbackTimeoutMillis: 3600000
+        appName: bookshop-mt-${org}-${space} # this is the text on the tile
+        xsappname: bookshop-mt-${org}-${space} # this is the value from xsuaa.parameters.config.xsappname
+        appUrls:
+          getDependencies: ~{srv/url}/mt/v1.0/subscriptions/dependencies
+          onSubscription: ~{srv/url}/mt/v1.0/subscriptions/tenants/{tenantId}
+          onSubscriptionAsync: true
+          onUnSubscriptionAsync: true
+          onUpdateDependenciesAsync: true
+          callbackTimeoutMillis: 3600000
+        displayName: bookshop
+        description: A simple CAP project.
+        category: 'Category'
     requires:
       - name: srv
   - name: cf-logging
